@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>variance — 홀덤펍 키우기</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <div id="hud-top">
+    <div class="stat"><span class="ico">💰</span><span id="hud-money">0</span></div>
+    <div class="stat"><span class="ico">⭐</span><span id="hud-fame">0</span></div>
+    <div class="stat tier" id="hud-tier">동네 펍</div>
+  </div>
+  <canvas id="game"></canvas>
+  <div id="toast"></div>
+  <div id="panel" class="hidden">
+    <div id="panel-head"><span id="panel-title"></span><button id="panel-close">✕</button></div>
+    <div id="panel-body"></div>
+  </div>
+  <div id="hud-bottom">
+    <button data-tab="shop">🛒 상점</button>
+    <button data-tab="dealer">🃏 딜러</button>
+    <button data-tab="deco">🎨 꾸미기</button>
+    <button data-tab="event">🏆 대회</button>
+  </div>
+</div>
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/render.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

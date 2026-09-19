@@ -1,0 +1,16 @@
+# 비밀
+.env
+.env.*
+*.key
+*.pem
+firebase-config.local.js
+
+# 생성 원본(로컬에만). 굽힌 결과(assets/pack)만 커밋한다
+assets/raw/
+
+# 도구 산출물
+tools/_out/
+*.log
+node_modules/
+.DS_Store
+Thumbs.db
