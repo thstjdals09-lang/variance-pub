@@ -24,6 +24,7 @@ const DATA = {
     plant:       { name: '화분',        cat: 'deco',  size: [1, 1], price: 120,  fameBonus: 1 },
     lamp:        { name: '스탠드 조명', cat: 'deco',  size: [1, 1], price: 260,  fameBonus: 2 },
     trophy:      { name: '트로피 장식장', cat: 'deco', size: [2, 1], price: 1800, fameBonus: 8 },
+    shelf:       { name: '책장',        cat: 'deco',  size: [2, 1], price: 700,  fameBonus: 3 },
   },
 
   DEALER: {

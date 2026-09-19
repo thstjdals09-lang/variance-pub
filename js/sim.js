@@ -74,7 +74,7 @@ const Sim = (() => {
     customers.push({
       id: cid++, x: door.x + 0.5, y: DATA.ROOM.h + 0.6, path, state: 'enter', tableId: f.table.id, seat: f.seat,
       look: f.pos.dir, timer: rnd(S.sitTime[0], S.sitTime[1]), color: PALETTE[(Math.random() * PALETTE.length) | 0],
-      hair: Math.random() < 0.5 ? '#3a2418' : '#e8c070', frame: 0,
+      hair: Math.random() < 0.5 ? '#3a2418' : '#e8c070', frame: 0, char: Math.random() < 0.5 ? 'm' : 'f',
     });
     st.stats.customers++;
   }

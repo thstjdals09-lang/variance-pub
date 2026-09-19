@@ -1,0 +1,98 @@
+{
+ "table_basic": {
+  "w": 32,
+  "h": 24
+ },
+ "table_pro": {
+  "w": 32,
+  "h": 22
+ },
+ "table_vip": {
+  "w": 48,
+  "h": 32
+ },
+ "bar": {
+  "w": 46,
+  "h": 44
+ },
+ "plant": {
+  "w": 16,
+  "h": 24
+ },
+ "lamp": {
+  "w": 13,
+  "h": 34
+ },
+ "trophy": {
+  "w": 30,
+  "h": 30
+ },
+ "chair": {
+  "w": 8,
+  "h": 16
+ },
+ "door": {
+  "w": 16,
+  "h": 25
+ },
+ "dartboard": {
+  "w": 16,
+  "h": 16
+ },
+ "picture": {
+  "w": 14,
+  "h": 14
+ },
+ "shelf": {
+  "w": 24,
+  "h": 32
+ },
+ "m_front_stand": {
+  "w": 11,
+  "h": 26
+ },
+ "m_front_walk": {
+  "w": 12,
+  "h": 26
+ },
+ "m_back_stand": {
+  "w": 11,
+  "h": 26
+ },
+ "m_back_walk": {
+  "w": 12,
+  "h": 26
+ },
+ "f_front_stand": {
+  "w": 12,
+  "h": 27
+ },
+ "f_front_walk": {
+  "w": 14,
+  "h": 27
+ },
+ "f_back_stand": {
+  "w": 11,
+  "h": 26
+ },
+ "f_back_walk": {
+  "w": 14,
+  "h": 26
+ },
+ "d_front_stand": {
+  "w": 12,
+  "h": 27
+ },
+ "d_deal": {
+  "w": 24,
+  "h": 27
+ },
+ "d_side_stand": {
+  "w": 12,
+  "h": 27
+ },
+ "d_side_walk": {
+  "w": 12,
+  "h": 27
+ }
+}

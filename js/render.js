@@ -78,9 +78,28 @@ const Render = (() => {
     personCache[key] = c; return c;
   }
 
+  // ── 에셋 팩 (assets/pack/<테마>/*.png). 로드되면 코드 스프라이트를 덮어쓴다 ──
+  const pack = {};   // name → Image
+  const flipCache = {};
+  const ACTOR_NAMES = ['m_front_stand', 'm_front_walk', 'm_back_stand', 'm_back_walk', 'f_front_stand', 'f_front_walk', 'f_back_stand', 'f_back_walk', 'd_front_stand', 'd_deal', 'd_side_stand', 'd_side_walk'];
+  const EXTRA_NAMES = ['chair', 'door', 'dartboard', 'picture'];
+  function loadPack(theme) {
+    const names = Object.keys(DATA.PROPS).concat(ACTOR_NAMES, EXTRA_NAMES);
+    for (const n of names) {
+      const im = new Image(); im.onload = () => { pack[n] = im; if (DATA.PROPS[n]) sprites[n] = im; };
+      im.src = `assets/pack/${theme}/${n}.png`;
+    }
+  }
+  // 좌우반전 사본 (side 뷰를 오른쪽으로 쓸 때)
+  function flipped(name) {
+    if (flipCache[name]) return flipCache[name]; const im = pack[name]; if (!im) return null;
+    const c = mk(im.width, im.height, g => { g.translate(im.width, 0); g.scale(-1, 1); g.drawImage(im, 0, 0); });
+    flipCache[name] = c; return c;
+  }
+
   // ── 캔버스/카메라 ────────────────────────────────────────
   function init(canvas) {
-    cv = canvas; ctx = cv.getContext('2d'); buildSprites(); resize();
+    cv = canvas; ctx = cv.getContext('2d'); buildSprites(); loadPack('cozy'); resize();
     window.addEventListener('resize', resize);
   }
   function resize() {
@@ -123,8 +142,10 @@ const Render = (() => {
     drawRoom(st);
     const list = [];
     for (const p of st.props) list.push({ y: p.y + DATA.PROPS[p.key].size[1], f: () => drawProp(p, st) });
-    for (const c of Sim.customers()) list.push({ y: c.y, f: () => drawPerson(c.x, c.y, c.color, c.hair, c.look, c.state === 'sit' ? 0 : ((c.frame | 0) & 1), c.state === 'sit') });
-    for (const p of State.tables()) if (p.dealerId) { const s = Sim.dealerSpot(p); list.push({ y: s.fy, f: () => drawPerson(s.fx, s.fy, '#1a1a22', '#2a2418', 'down', ((time / 400) | 0) & 1, false, true) }); }
+    // 좌석 의자: 사람보다 먼저(같은 y에서 -0.01) 그린다 — 등받이가 사람을 가리지 않게
+    if (pack.chair) for (const p of State.tables()) for (const s of Sim.seats(p)) list.push({ y: s.fy - 0.01, f: () => drawAt(pack.chair, s.fx, s.fy + 0.1) });
+    for (const c of Sim.customers()) list.push({ y: c.y, f: () => drawPerson(c, c.state === 'sit' ? 0 : ((c.frame | 0) & 1), c.state === 'sit') });
+    for (const p of State.tables()) if (p.dealerId) { const s = Sim.dealerSpot(p); list.push({ y: s.fy, f: () => drawDealer(s.fx, s.fy, ((time / 700) | 0) & 1) }); }
     if (ghost) list.push({ y: ghost.y + DATA.PROPS[ghost.key].size[1], f: () => drawGhost() });
     list.sort((a, b) => a.y - b.y);
     for (const it of list) it.f();
@@ -155,10 +176,14 @@ const Render = (() => {
     ctx.fillStyle = Wl.top; ctx.fillRect(0, T, T, (WH + rh + 1) * T); ctx.fillRect((rw + 1) * T, T, T, (WH + rh + 1) * T);
     ctx.fillStyle = Wl.top; ctx.fillRect(0, OY + rh * T, (rw + 2) * T, T);
     ctx.fillStyle = Wl.face; ctx.fillRect(0, OY + rh * T + 4, (rw + 2) * T, T - 4);
-    const dw = tileToWorld(DATA.DOOR_X, rh); ctx.fillStyle = '#3a2418'; ctx.fillRect(dw.x - 2, dw.y - 2, T + 4, T + 2);
-    ctx.fillStyle = '#a8743e'; ctx.fillRect(dw.x, dw.y - 1, T, T + 1); ctx.fillStyle = '#ffd86b'; ctx.fillRect(dw.x + T - 4, dw.y + 6, 2, 2);
+    const dw = tileToWorld(DATA.DOOR_X, rh);
     // 발판 매트
     ctx.fillStyle = '#8a2a34'; ctx.fillRect(dw.x - 2, dw.y - T, T + 4, T - 2);
+    if (pack.door) ctx.drawImage(pack.door, dw.x, dw.y + T - pack.door.height - 2);
+    else { ctx.fillStyle = '#3a2418'; ctx.fillRect(dw.x - 2, dw.y - 2, T + 4, T + 2); ctx.fillStyle = '#a8743e'; ctx.fillRect(dw.x, dw.y - 1, T, T + 1); ctx.fillStyle = '#ffd86b'; ctx.fillRect(dw.x + T - 4, dw.y + 6, 2, 2); }
+    // 뒷벽 장식 (다트판·액자) — 기본 제공
+    if (pack.dartboard) ctx.drawImage(pack.dartboard, OX + 7 * T, T + 6);
+    if (pack.picture) ctx.drawImage(pack.picture, OX + 10 * T, T + 8);
   }
   function drawSign() {
     const x = OX + (DATA.ROOM.w / 2 - 2) * T, y = -6;
@@ -175,12 +200,30 @@ const Render = (() => {
       ctx.fillStyle = '#ffd86b'; ctx.font = '7px monospace'; ctx.fillText('!', w.x + d.size[0] * T / 2 - 2, w.y - sp.height - 1);
     }
   }
-  function drawPerson(fx, fy, color, hair, dir, frame, sit, dealer) {
-    const sp = person(color, hair, dir, frame, sit);
-    const w = tileToWorld(fx, fy);
+  // 발 위치(fx,fy)에 그림 바닥 중앙을 맞춰 찍는다. cut = 아래에서 잘라낼 px(앉은 모습: 다리를 테이블 뒤로)
+  function drawAt(im, fx, fy, cut = 0) {
+    const w = tileToWorld(fx, fy); const h = im.height - cut;
+    ctx.drawImage(im, 0, 0, im.width, h, Math.round(w.x - im.width / 2), Math.round(w.y - h), im.width, h);
+  }
+  function drawPerson(c, frame, sit) {
+    const w = tileToWorld(c.x, c.y);
     ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(w.x - 5, w.y - 2, 10, 3);
+    const face = c.look === 'up' ? 'back' : 'front';
+    const name = `${c.char || 'm'}_${face}_${frame && !sit ? 'walk' : 'stand'}`;
+    if (pack[name]) {
+      // 옆으로 걸을 때는 앞모습을 진행 방향으로 반전 (측면 시트는 다음 단계)
+      const im = c.look === 'left' ? flipped(name) : pack[name];
+      drawAt(im, c.x, c.y, sit ? 5 : 0); return;
+    }
+    const sp = person(c.color, c.hair, c.look, frame, sit);
     ctx.drawImage(sp, Math.round(w.x - 6), Math.round(w.y - sp.height));
-    if (dealer) { ctx.fillStyle = '#e0553f'; ctx.fillRect(Math.round(w.x - 2), Math.round(w.y - 12), 4, 2); }  // 나비넥타이
+  }
+  function drawDealer(fx, fy, phase) {
+    const name = phase ? 'd_deal' : 'd_front_stand';
+    if (pack[name]) { const w = tileToWorld(fx, fy); ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(w.x - 5, w.y - 2, 10, 3); drawAt(pack[name], fx, fy); return; }
+    const sp = person('#1a1a22', '#2a2418', 'down', phase, false); const w = tileToWorld(fx, fy);
+    ctx.drawImage(sp, Math.round(w.x - 6), Math.round(w.y - sp.height));
+    ctx.fillStyle = '#e0553f'; ctx.fillRect(Math.round(w.x - 2), Math.round(w.y - 12), 4, 2);
   }
   function drawGhost() {
     const d = DATA.PROPS[ghost.key]; const sp = sprites[ghost.key]; const w = tileToWorld(ghost.x, ghost.y);

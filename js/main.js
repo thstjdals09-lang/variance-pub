@@ -23,6 +23,7 @@
   // 디버그: ?fast=초 → 부팅 시 시뮬을 미리 돌린다 (헤드리스 스크린샷용)
   const fast = +(new URLSearchParams(location.search).get("fast") || 0);
   for (let i = 0; i < fast * 30; i++) Sim.step(st, 1 / 30);
+  if (location.search.includes("dbg")) document.title = `vw ${innerWidth} sw ${document.documentElement.scrollWidth} bottom ${document.getElementById("hud-bottom").getBoundingClientRect().width} tier ${document.getElementById("hud-tier").getBoundingClientRect().left}`;
 
   let last = performance.now(), acc = 0, saveAcc = 0;
   function loop(now) {
