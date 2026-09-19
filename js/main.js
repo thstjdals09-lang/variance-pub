@@ -20,6 +20,10 @@
   cv.addEventListener('pointerup', e => { if (down && !moved) UI.tap(e.clientX, e.clientY); down = null; });
   cv.addEventListener('pointercancel', () => { down = null; });
 
+  // 디버그: ?fast=초 → 부팅 시 시뮬을 미리 돌린다 (헤드리스 스크린샷용)
+  const fast = +(new URLSearchParams(location.search).get("fast") || 0);
+  for (let i = 0; i < fast * 30; i++) Sim.step(st, 1 / 30);
+
   let last = performance.now(), acc = 0, saveAcc = 0;
   function loop(now) {
     const dt = Math.min(0.1, (now - last) / 1000); last = now;

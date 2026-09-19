@@ -90,7 +90,7 @@ const Render = (() => {
     centerCam();
   }
   function roomPx() { return { w: (DATA.ROOM.w + 2) * T, h: (DATA.ROOM.h + DATA.WALL_H + 2) * T }; }
-  function centerCam() { const r = roomPx(); cam.x = (r.w * scale - W) / 2; cam.y = (r.h * scale - H) / 2 - 20; clampCam(); }
+  function centerCam() { const r = roomPx(); cam.x = (r.w * scale - W) / 2; cam.y = (r.h * scale - H) / 2 + 24; clampCam(); }
   function clampCam() {
     const r = roomPx(); const m = 40;
     cam.x = Math.max(-m, Math.min(r.w * scale - W + m, cam.x));

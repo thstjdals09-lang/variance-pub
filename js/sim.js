@@ -111,7 +111,7 @@ const Sim = (() => {
         const d = DATA.PROPS[t.key]; const eff = dealerEff(st, t);
         const earn = d.rake * eff * dt;
         st.money += earn; st.earned += earn;
-        const dl = st.dealers.find(x => x.id === t.dealerId); if (dl) gainXp(st, dl, dt * 0.6);
+        const dl = st.dealers.find(x => x.id === t.dealerId); if (dl) gainXp(st, dl, dt * 0.08);
         if (c.timer <= 0) {
           const tip = Math.round(d.rake * eff * 3);
           st.money += tip; st.earned += tip; st.fame += 0.6 + d.fameBonus * 0.1 + (eff - 0.4);
